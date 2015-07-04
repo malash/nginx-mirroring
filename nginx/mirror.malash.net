@@ -1,0 +1,94 @@
+server {
+        listen 80;
+        listen [::]:80;
+        server_name mirror.malash.net;
+        root /var/www/mirror.malash.net;
+        access_log  /var/log/nginx/mirror.malash.net.access.log access;
+        index index.html;
+
+        # auto append / after dir
+        if (-d $request_filename){
+                rewrite ^/(.*)([^/])$ http://$host/$1$2/ permanent;
+        }
+        if (-f $request_filename/index.html){
+                rewrite (.*)/ $1/index.html break;
+        }
+
+        resolver 114.114.114.114;
+
+        location / {
+                proxy_redirect off;
+                client_max_body_size 50m;
+                client_body_buffer_size 256k;
+                proxy_connect_timeout 30;
+                proxy_send_timeout 30;
+                proxy_read_timeout 60;
+                proxy_buffer_size 256k;
+                proxy_buffers 4 256k;
+                proxy_busy_buffers_size 256k;
+                proxy_temp_file_write_size 256k;
+                proxy_next_upstream error timeout invalid_header http_500 http_503 http_404;
+                proxy_max_temp_file_size 128m;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                set $found 0;
+                if ($request_uri ~* ^/([0-9a-zA-Z]+[0-9a-zA-Z\.-]*\.[a-zA-Z]*)/(.*)$) {
+                        set $source_host $1;
+                        set $source_uri $2;
+                        set $found 1;
+                        rewrite ^/[0-9a-zA-Z]+[0-9a-zA-Z\.-]*\.[a-zA-Z]*/.*$ /$2;
+                }
+                if ($found = 0) {
+                        return 404;
+                }
+                proxy_pass $scheme://$source_host/$source_uri ;
+        }
+
+        location /index.html {
+        }
+        location /favicon.ico {
+        }
+        location /robots.txt {
+        }
+
+}
+
+server {
+        listen 80;
+        listen [::]:80;
+        server_name *.mirror.malash.net;
+        root /var/www/mirror.malash.net;
+        access_log  /var/log/nginx/mirror.malash.net.access.log access;
+
+        resolver 114.114.114.114;
+
+        location / {
+                proxy_redirect off;
+                client_max_body_size 50m;
+                client_body_buffer_size 256k;
+                proxy_connect_timeout 30;
+                proxy_send_timeout 30;
+                proxy_read_timeout 60;
+                proxy_buffer_size 256k;
+                proxy_buffers 4 256k;
+                proxy_busy_buffers_size 256k;
+                proxy_temp_file_write_size 256k;
+                proxy_next_upstream error timeout invalid_header http_500 http_503 http_404;
+                proxy_max_temp_file_size 128m;
+                proxy_http_version 1.1;
+                proxy_set_header Connection "";
+                set $found 0;
+                if ($host ~* ^([0-9a-zA-Z]+[0-9a-zA-Z\.-]*\.[a-zA-Z]*)\.(mirror.malash.net)$) {
+                        set $source_host $1;
+                        set $found 1;
+                }
+                if ($found = 0) {
+                        return 404;
+                }
+                proxy_pass $scheme://$source_host$request_uri ;
+        }
+
+        location /robots.txt {
+        }
+
+}
