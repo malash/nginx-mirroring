@@ -31,6 +31,7 @@ server {
         proxy_max_temp_file_size 128m;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
+        proxy_set_header Accept-Encoding "identity";
         set $found 0;
         if ($request_uri ~* ^/([0-9a-zA-Z]+[0-9a-zA-Z\.-]*\.[a-zA-Z]*)/(.*)$) {
             set $source_host $1;
@@ -42,6 +43,8 @@ server {
             return 404;
         }
         proxy_pass $scheme://$source_host/$source_uri ;
+        sub_filter "${source_host}" "mirror.malash.net/${source_host}";
+        sub_filter_once on;
     }
 
     location /index.html {
@@ -77,6 +80,7 @@ server {
         proxy_max_temp_file_size 128m;
         proxy_http_version 1.1;
         proxy_set_header Connection "";
+        proxy_set_header Accept-Encoding "identity";
         set $found 0;
         if ($host ~* ^([0-9a-zA-Z]+[0-9a-zA-Z\.-]*\.[a-zA-Z]*)\.(mirror.malash.net)$) {
             set $source_host $1;
@@ -86,6 +90,8 @@ server {
             return 404;
         }
         proxy_pass $scheme://$source_host$request_uri ;
+        sub_filter "${source_host}" "${source_host}.mirror.malash.net";
+        sub_filter_once on;
     }
 
     location /robots.txt {
