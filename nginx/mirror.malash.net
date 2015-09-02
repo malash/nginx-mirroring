@@ -44,7 +44,7 @@ server {
         }
         proxy_pass $scheme://$source_host/$source_uri ;
         sub_filter "${source_host}" "mirror.malash.net/${source_host}";
-        sub_filter_once on;
+        sub_filter_once off;
     }
 
     location /index.html {
@@ -91,7 +91,7 @@ server {
         }
         proxy_pass $scheme://$source_host$request_uri ;
         sub_filter "${source_host}" "${source_host}.mirror.malash.net";
-        sub_filter_once on;
+        sub_filter_once off;
     }
 
     location /robots.txt {
