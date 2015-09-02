@@ -11,9 +11,9 @@
 
 2. 复制nginx/mirror.malash.net到nginx vhost目录，一般为/etc/nginx/sites-available/，并在/etc/nginx/sites-enabled/建立软链接
 
-3. 修改/etc/nginx/sites-available//mirror.malash.net中的域名，建议使用全局替换“mirror.malash.net”为新域名
+3. 修改/etc/nginx/sites-available/mirror.malash.net中的域名，建议使用全局替换“mirror.malash.net”为新域名
 
-4. 复制www内的文件到合适的位置，并修改/etc/nginx/sites-available//mirror.malash.net中root值
+4. 复制www内的文件到合适的位置，并修改/etc/nginx/sites-available/mirror.malash.net中root值
 
 ##使用方法
 
